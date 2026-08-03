@@ -1,4 +1,4 @@
-# 📰 Toplanan Haberler ve Tam Metinler Raporu
+# 📰 Toplanan Tüm Haberler ve Tam Metinler Raporu
 
 ## Currents API Haberleri (20 Adet)
 
@@ -132,8 +132,7 @@
 - **Tam Metin:**
 > TÜİK Temmuz 2026 enflasyon verilerini açıkladı
 Türkiye İstatistik Kurumu (TÜİK), Temmuz 2026 dönemine ilişkin enflasyon verilerini açıkladı. Buna göre enflasyon aylık bazda yüzde 1,78 yükselirken; yıllık bazda ise artış yüzde 31,75 oldu.
-Türkiye İstatistik Kurumu (TÜİK) Temmuz 2026 dönemine ilişkin verileri paylaştı. Buna göre aylık ve yıllık bazda enflasyon oranı belli oldu.
-TÜFE AYLIK 1,78, YILL...
+Türkiye İstatistik Kurumu (TÜİK) Temmuz 2026 dönemine ilişkin verileri paylaştı. Buna göre aylık ve yıllık bazda...
 
 ### [Dünyanın en büyük 10 oteli hangisi? 2026 listesi açıklandı](https://www.turizmguncel.com/haber/dunyanin-en-buyuk-10-oteli-hangisi-2026-listesi-aciklandi)
 - **Tarih:** 2026-08-03T08:30:00+03:00
@@ -141,7 +140,7 @@ TÜFE AYLIK 1,78, YILL...
 - **Tam Metin:**
 > Dünyanın en büyük 10 oteli hangisi? 2026 listesi açıklandı
 MKG Colsulting Global Hotel Rankings'in 2026 verileri belli oldu. Buna göre toplam oda kapasitesi bakımından dünyanın en büyük otel grubu Marriott oldu. Listede Hilton, Accor, Jin Jiang ve Wyndham gibi markalar da yer aldı.
-Dünyada otelcilik sektörüne yön veren en büyük 10 marka açıklandı. MKG Consulting Global Hotel Rankings 2026 raporuna...
+Dünyada otelcilik sektörüne yön veren en büyük 10 marka açıklandı. ...
 
 ### [Booking.com Türkiye'ye dönecek mi? Şartlar belli oldu](https://www.turizmguncel.com/haber/bookingcom-turkiyeye-donecek-mi-sartlar-belli-oldu)
 - **Tarih:** 2026-08-03T10:00:00+03:00
@@ -149,7 +148,7 @@ Dünyada otelcilik sektörüne yön veren en büyük 10 marka açıklandı. MKG 
 - **Tam Metin:**
 > Booking.com Türkiye'ye dönecek mi? Şartlar belli oldu
 Booking.com'un Türkiye'de yeniden faaliyet göstermesiyle ilgili şartlar netleşmeye başladı. Meclis'e sunulan düzenlemedeki maddelere uyması durumunda Booking yeniden Türkiye'ye dönebilecek.
-TÜRSAB’ın 2017’de açtığı dava sonrası haksız rekabet ve vergi yükümlülükleri gibi gerekçeler gösterilerek Türkiye’deki faaliyetleri durdurulan Booking.com’u...
+TÜRSAB’ın 2017’de açtığı dava sonrası haksız rekabet ve vergi yükümlülükleri gibi gerekçeler gösterilerek ...
 
 ### [Rusya'da büyük otellerde dijital kimlik zorunluluğu başlıyor](https://www.turizmguncel.com/haber/rusyada-buyuk-otellerde-dijital-kimlik-zorunlulugu-basliyor)
 - **Tarih:** 2026-08-03T09:00:00+03:00
@@ -157,7 +156,7 @@ TÜRSAB’ın 2017’de açtığı dava sonrası haksız rekabet ve vergi yükü
 - **Tam Metin:**
 > Rusya'da büyük otellerde dijital kimlik zorunluluğu başlıyor
 Rusya’da 50’den fazla odası bulunan oteller için, 1 Eylül 2026’dan itibaren dijital kimlikle giriş yapma uygulaması zorunlu olacak.
-Rusya’da büyük oteller için yeni bir düzenlemeye gidiliyor. Buna göre 50’den fazla odası bulunan otellere dijital kimlikle giriş zorunlu olacak. G.B. Plehabov Rusya Ekonomi Üniversitesi Otelcilik ve Turizm Y...
+Rusya’da büyük oteller için yeni bir düzenlemeye gidiliyor. Buna göre 50’den fazla odası bulunan otellere dijital kimlikle giriş zorunlu olacak. G.B. Plehabo...
 
 ---
 
@@ -168,14 +167,14 @@ Rusya’da büyük oteller için yeni bir düzenlemeye gidiliyor. Buna göre 50�
 - **Metin Uzunluğu:** 2810 karakter
 - **Tam Metin:**
 > Elite World Hotels & Resorts, Anadolu'daki büyüme planlarına Gaziantep'i de ekledi.
-Şirket, Asos Park Turizm ve Otelcilik A.Ş. ile imzaladığı yatırım anlaşmasıyla kentte Elite World Comfy markasını hayata geçirmeye hazırlanıyor. Projenin tamamlanmasının ardından Gaziantep, grubun Güneydoğu Anadolu Bölgesi'ndeki dördüncü oteline ev sahipliği yapacak.Yeni yatırımın 2027 yılının ikinci yarısında misa...
+Şirket, Asos Park Turizm ve Otelcilik A.Ş. ile imzaladığı yatırım anlaşmasıyla kentte Elite World Comfy markasını hayata geçirmeye hazırlanıyor. Projenin tamamlanmasının ardından Gaziantep, grubun Güneydoğu Anadolu Bölgesi'ndeki dördüncü oteline ev sahipliği yapacak...
 
 ### [easyJet satışında yeni perde: Air France-KLM yolcular için harekete geçti](https://www.turizmajansi.com/haber/easyjet-satisinda-yeni-perde-air-france-klm-yolcular-icin-harekete-gecti-h73404)
 - **Tarih:** 2026-08-03T10:20+03:00
 - **Metin Uzunluğu:** 3449 karakter
 - **Tam Metin:**
 > Avrupa havacılık sektöründe gündemi meşgul eden easyJet'in satış süreci, rakip şirketleri de yeni stratejiler geliştirmeye yöneltti.
-Air France-KLM, İngiliz düşük maliyetli hava yolu şirketinin olası el değiştirme sürecinde yaşanabilecek belirsizlikleri fırsata çevirmeyi hedefliyor.Grubun CEO'su Ben Smith, geçmiş yıllarda easyJet'e yönelen yolcuları yeniden kendi bünyelerine kazandırmak için rekab...
+Air France-KLM, İngiliz düşük maliyetli hava yolu şirketinin olası el değiştirme sürecinde yaşanabilecek belirsizlikleri fırsata çevirmeyi hedefliyor.Grubun CEO'su Ben Smith, geçmiş yıllarda easyJet'e yönelen yolcular...
 
 ---
 
