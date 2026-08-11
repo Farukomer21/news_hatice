@@ -11,6 +11,21 @@ import trafilatura
 
 # Türkiye, Almanya ve Rusya için haber kaynakları kategorize edilmiştir.
 TARGET_DOMAINS_BY_CATEGORY = {
+    "antalya_news": {
+        "lang": "tr", "gl": "TR", "ceid": "TR:tr",
+        "domains": [
+            "akdenizgercek.com.tr",
+            "akdenizmanset.com.tr",
+            "antalyanews.com.tr",
+            "gunhaber.com.tr",
+            "lidergazete.com",
+            "nehir.net",
+            "turizmdays.com",
+            "turizmgazetesi.com",
+            "turizmguncel.com",
+            "yenialanya.com"
+        ]
+    },
     "turkey_tourism": {
         "lang": "tr", "gl": "TR", "ceid": "TR:tr",
         "domains": [

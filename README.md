@@ -4,7 +4,8 @@ Bu proje, Doğal Dil İşleme (NLP) modelleri için Türkiye, Almanya ve Rusya'd
 
 ## 🌐 Desteklenen Kaynaklar (43 Adet Benzersiz Domain)
 
-### 🇹🇷 Türkiye (Turizm & Ekonomi)
+### 🇹🇷 Türkiye (Antalya Haber, Turizm & Ekonomi)
+- **Antalya Haberleri:** `akdenizgercek.com.tr`, `akdenizmanset.com.tr`, `antalyanews.com.tr`, `gunhaber.com.tr`, `lidergazete.com`, `nehir.net`, `turizmdays.com`, `turizmgazetesi.com`, `turizmguncel.com`, `yenialanya.com`
 - **Turizm Odaklı:** `turizmguncel.com`, `turizmgazetesi.com`, `turizmajansi.com`, `gmdergi.com`, `tourexpi.com`, `turizmgunlugu.com`, `tourismtoday.net`, `turizmaktuel.com`, `turizmnews.com`, `turizmekonomi.com`, `turizminsesi.com`, `turizmdosyasi.com`
 - **Ekonomi Odaklı:** `bloomberght.com`, `ekonomim.com`, `news.foreks.com`, `paraanaliz.com`, `tr.investing.com`, `sabah.com.tr`, `milliyet.com.tr`
 
@@ -20,10 +21,8 @@ Bu proje, Doğal Dil İşleme (NLP) modelleri için Türkiye, Almanya ve Rusya'd
 
 ## 📁 Proje Yapısı
 
-- **`GoogleNewsQuery/`**: Google News `site:domain.com when:1d` sorgusunu kullanan, Türkçe, Almanca ve Rusça dillerindeki 43 haber kaynağının son 24 saatlik haberlerinin tam metinlerini jenerik olarak çeken evrensel kazıyıcı.
-- **`Currents API/`**: Currents API entegrasyonu.
-- **`TurizmGüncel/`**: TurizmGüncel (turizmguncel.com) özel kazıyıcı.
-- **`Turizm Ajansı/`**: Turizm Ajansı (turizmajansi.com) özel kazıyıcı.
+- **`news_fetch.py`**: Google News sorgusu (`site:domain.com when:1d`) ile Türkçe, Almanca ve Rusça dillerindeki haber kaynaklarını otomatik tarayan ana kazıyıcı modülü.
+- **`main.py`**: Projenin çalıştırma dosyası. Belirlenen haber kaynaklarından güncel haberleri ve tam metinlerini toplayıp `news_output.json` dosyasına kaydeder.
 
 ## 🚀 Kurulum
 
@@ -35,7 +34,14 @@ pip install -r requirements.txt
 
 ## 🛠️ Kullanım
 
-### 43 Kaynaktan Evrensel Haber Çekici:
+Haber kaynaklarından güncel haberleri çekmek için:
+
 ```bash
-python3 GoogleNewsQuery/universal_google_news_scraper.py
+python3 news_fetch.py
+```
+
+veya `main.py` üzerinden:
+
+```bash
+python3 main.py
 ```
