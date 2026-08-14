@@ -119,6 +119,7 @@ DOMAIN_ARTICLE_LIMITS = {
     "interfax.ru": 20,
     "bloomberght.com": 30,
     "ekonomim.com": 30,
+    "handelsblatt.com": 30,
 }
 
 # Gövde metni bu uzunluğun altındaysa çerez/JS uyarısı sayılır, kabul edilmez.
