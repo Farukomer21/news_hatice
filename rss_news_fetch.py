@@ -114,7 +114,9 @@ EXCLUDED_DOMAINS = {
 
 # Kaynak bazlı özel haber sayısı kısıtları (aşırı haber üreten dev portallar için)
 DOMAIN_ARTICLE_LIMITS = {
-    "kommersant.ru": 30,
+    "kommersant.ru": 20,
+    "vedomosti.ru": 20,
+    "interfax.ru": 20,
     "bloomberght.com": 30,
     "ekonomim.com": 30,
 }
