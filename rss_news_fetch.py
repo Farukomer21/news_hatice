@@ -112,6 +112,11 @@ EXCLUDED_DOMAINS = {
     "trvlcounter.de",   # www. alt alanında SSL sertifika uyuşmazlığı, RSS'i de yok
 }
 
+# Kaynak bazlı özel haber sayısı kısıtları (aşırı haber üreten dev portallar için)
+DOMAIN_ARTICLE_LIMITS = {
+    "kommersant.ru": 30,
+}
+
 # Gövde metni bu uzunluğun altındaysa çerez/JS uyarısı sayılır, kabul edilmez.
 MIN_TEXT_LENGTH = 250
 
@@ -375,15 +380,18 @@ class RssFirstNewsScraper:
                 category_results: Dict[str, Any] = {}
 
                 for entry in config["domains"]:
-                    if split_domain_and_keywords(entry)[0] in EXCLUDED_DOMAINS:
+                    dom_clean = split_domain_and_keywords(entry)[0]
+                    if dom_clean in EXCLUDED_DOMAINS:
                         print(f"\n⏭️  Atlandı (dışlama listesinde): '{entry}'", flush=True)
                         continue
+
+                    dom_limit = DOMAIN_ARTICLE_LIMITS.get(dom_clean, max_articles_per_domain)
 
                     items = fetch_domain_via_rss(
                         entry=entry,
                         category=category_name,
                         start_filter_tsi=start_tsi,
-                        max_articles=max_articles_per_domain,
+                        max_articles=dom_limit,
                         lang=config["lang"],
                     )
 
@@ -395,7 +403,7 @@ class RssFirstNewsScraper:
                         items = UniversalGoogleNewsScraper.fetch_today_news_for_domain(
                             domain=entry,
                             period="2d",
-                            max_articles=max_articles_per_domain,
+                            max_articles=dom_limit,
                             lang=config["lang"],
                             gl=config["gl"],
                             ceid=config["ceid"],

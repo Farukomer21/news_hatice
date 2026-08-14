@@ -121,8 +121,9 @@ Projedeki veri toplama ve işleme süreci adım adım şu şekilde gerçekleşme
 
 ## 📁 Proje Yapısı
 
-- **`news_fetch.py`**: Kazıyıcı mantığının, URL çözücünün ve metin çıkarma algoritmalarının bulunduğu ana sınıf (`UniversalGoogleNewsScraper`).
-- **`main.py`**: Kazıyıcıyı tetikleyen ve verileri `news_list.json` ile `news_output.json` dosyalarına kaydeden çalıştırma betiği.
+- **`rss_news_fetch.py`**: **Giriş noktası.** Yayıncı RSS beslemelerini birincil kaynak olarak kullanan toplayıcı; çıktıları `rss_news_output.json` ve `rss_news_list.json` dosyalarına kaydeder.
+- **`news_fetch.py`**: Ortak parçalar — TSİ zaman yardımcıları, kaynak listesi (`TARGET_DOMAINS_BY_CATEGORY`) ve RSS'i olmayan kaynaklar için Google News yedek yolu (`UniversalGoogleNewsScraper`). Tek başına çalıştırılmaz.
+- **`rapor_tablo.py`**: Toplanan haberlerin kaynak bazlı sayı/başarı tablosunu üretir.
 - **`requirements.txt`**: Proje için gerekli Python kütüphanelerinin listesi.
 
 ---
@@ -138,10 +139,16 @@ pip install -r requirements.txt
 ### 2. Haber Çekme Betiğini Çalıştırın
 
 ```bash
-python3 main.py
+python3 rss_news_fetch.py
 ```
 
 ### 3. Çıktı Dosyaları
 
-- **`news_list.json`**: Doğrudan `json.load()` ile okunup kullanılabilen düz haber dizisi.
-- **`news_output.json`**: Kategorilere ve domainlere göre gruplanmış istatistiki JSON verisi.
+- **`rss_news_list.json`**: Doğrudan `json.load()` ile okunup kullanılabilen düz haber dizisi.
+- **`rss_news_output.json`**: Kategorilere ve domainlere göre gruplanmış, tanı raporu (`diagnostics`) da içeren JSON verisi.
+
+### 4. Kaynak Bazlı Rapor
+
+```bash
+python3 rapor_tablo.py --csv kaynak_tablosu.csv
+```

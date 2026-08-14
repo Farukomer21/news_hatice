@@ -1,12 +1,19 @@
-import os
-import json
-import time
+"""
+RSS öncelikli toplayıcının (rss_news_fetch.py) kullandığı ortak parçalar:
+  - TSİ zaman yardımcıları
+  - Kaynak listesi (TARGET_DOMAINS_BY_CATEGORY)
+  - Google News yedek yolu (UniversalGoogleNewsScraper)
+
+Bu modül tek başına çalıştırılmaz; giriş noktası rss_news_fetch.py'dir.
+Google yolu yalnızca RSS'i olmayan kaynaklar için yedek olarak çağrılır.
+"""
+
 import re
 import urllib.parse
 from datetime import datetime, timezone, timedelta
 from email.utils import parsedate_to_datetime
 from typing import List, Dict, Any, Optional
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor
 import requests
 from bs4 import BeautifulSoup
 from googlenewsdecoder import new_decoderv1
@@ -45,39 +52,27 @@ TARGET_DOMAINS_BY_CATEGORY = {
     "antalya_news": {
         "lang": "tr", "gl": "TR", "ceid": "TR:tr",
         "domains": [
-            # Antalya Turizm Odaklı Kaynaklar
-            "hurriyet.com.tr Antalya turizm",
-            "milliyet.com.tr Antalya turizm",
-            "tourismjournal.com.tr",
-            "turizmajansi.com",
+            # En Popüler 5 Antalya Turizm Kaynağı
             "turizmdays.com",
             "turizmgazetesi.com",
             "turizmguncel.com",
-            "turizmnews.com",
-            "turizmgundemi.com",
+            "turizmajansi.com",
+            "tourismjournal.com.tr",
             # En Popüler 3 Genel Antalya Haber Kaynağı
             "akdenizmanset.com.tr",
             "gunhaber.com.tr",
-            "yenialanya.com",
-            # Yerel portal; anahtar kelimelerle sadece turizm haberleri süzülüyor.
-            # Kelimeler VEYA mantığıyla eşleşir; tek "turizm" kelimesi fazla dar kalıyordu.
-            "haberantalya.com turizm turist otel tatil konaklama havalimanı"
+            "yenialanya.com"
         ]
     },
     "turkey_tourism": {
         "lang": "tr", "gl": "TR", "ceid": "TR:tr",
         "domains": [
-            # En Popüler 10 Türkiye Turizm Kaynağı
+            # En Popüler 5 Türkiye Turizm Kaynağı
             "turizmguncel.com",
-            "turizmgunlugu.com",
             "turizmgazetesi.com",
-            "turizmajansi.com",
-            "turizmaktuel.com",
             "tourismtoday.net",
-            "tourismjournal.com.tr",
-            "aktob.org.tr",
-            "turizminsesi.com",
-            "turizmhabermerkezi.net"
+            "turizmajansi.com",
+            "turizmaktuel.com"
         ]
     },
     "turkey_economy": {
@@ -116,10 +111,11 @@ TARGET_DOMAINS_BY_CATEGORY = {
 
 class UniversalGoogleNewsScraper:
     """
-    Google News RSS Query kullanarak Türkiye, Almanya ve Rusya'daki 43 farklı haber sitesinin
-    bugün (TSİ gece 00:00'dan itibaren) yayınladığı haberleri ve tam metinlerini çeken evrensel kazıyıcı.
+    Google News RSS sorgusuyla tek bir kaynağın haberlerini çeken yedek kazıyıcı.
+    rss_news_fetch.py, RSS beslemesi olmayan ya da 0 sonuç veren kaynaklar için
+    yalnızca fetch_today_news_for_domain() metodunu çağırır.
     """
-    
+
     @staticmethod
     def fetch_today_news_for_domain(
         domain: str, 
@@ -311,189 +307,3 @@ class UniversalGoogleNewsScraper:
         except Exception as e:
             print(f"❌ '{domain}' taranırken hata oluştu: {e}", flush=True)
             return []
-
-    def fetch_all_categories(
-        self, 
-        max_articles_per_domain: Optional[int] = None, 
-        since_yesterday_noon: bool = True,
-        only_today: bool = False,
-        auto_save_paths: Optional[Dict[str, str]] = None
-    ) -> Dict[str, Any]:
-        """
-        Tüm ülkelerdeki ve kategorilerdeki kaynakların dün öğlen 12:00'den itibaren yayınlanan haberlerini sırayla çeker.
-        auto_save_paths verilirse her domain bittiğinde dosyaları diske anlık otomatik kaydeder.
-        """
-        all_data = {}
-        now_tsi = datetime.now(TSI_TZ)
-        total_articles_count = 0
-
-        if since_yesterday_noon:
-            start_time_tsi = get_yesterday_noon_tsi()
-            filter_desc = f"Dün Öğlen 12:00'den İtibaren ({start_time_tsi.strftime('%Y-%m-%d %H:%M:%S TSİ')})"
-        elif only_today:
-            start_time_tsi = get_today_start_tsi()
-            filter_desc = f"Bugün 00:00'dan İtibaren ({start_time_tsi.strftime('%Y-%m-%d %H:%M:%S TSİ')})"
-        else:
-            start_time_tsi = None
-            filter_desc = "Tüm Zamanlar"
-
-        try:
-            for category_name, config in TARGET_DOMAINS_BY_CATEGORY.items():
-                print(f"\n==================================================")
-                print(f"🌐 Kategori Taranıyor: {category_name.upper()}")
-                print(f"==================================================", flush=True)
-                
-                category_results = {}
-                for dom in config["domains"]:
-                    news_items = self.fetch_today_news_for_domain(
-                        domain=dom,
-                        period="2d",
-                        max_articles=max_articles_per_domain,
-                        lang=config["lang"],
-                        gl=config["gl"],
-                        ceid=config["ceid"],
-                        since_yesterday_noon=since_yesterday_noon,
-                        only_today=only_today,
-                        category=category_name
-                    )
-
-                    category_results[dom] = {
-                        "count": len(news_items),
-                        "articles": news_items
-                    }
-                    total_articles_count += len(news_items)
-
-                    # Anlık Otomatik Kaydetme (Auto-save)
-                    all_data[category_name] = category_results
-                    if auto_save_paths:
-                        current_out = {
-                            "fetch_time_tsi": datetime.now(TSI_TZ).strftime("%Y-%m-%d %H:%M:%S TSİ"),
-                            "filter_start_tsi": start_time_tsi.strftime("%Y-%m-%d %H:%M:%S TSİ") if start_time_tsi else "",
-                            "filter_description": filter_desc,
-                            "total_domains": sum(len(c["domains"]) for c in TARGET_DOMAINS_BY_CATEGORY.values()),
-                            "total_articles_collected": total_articles_count,
-                            "categories": all_data
-                        }
-                        if "categorized" in auto_save_paths:
-                            self.save_to_json(current_out, auto_save_paths["categorized"])
-                        if "flat" in auto_save_paths:
-                            self.save_to_json(self.flatten_articles(current_out), auto_save_paths["flat"])
-
-                all_data[category_name] = category_results
-
-        except KeyboardInterrupt:
-            print("\n⚠️ Tarama kullanıcı tarafından durduruldu! Şimdiye kadar toplanan tüm haberler kaydediliyor...", flush=True)
-
-        health_report = self.generate_health_report(all_data)
-
-        final_result = {
-            "fetch_time_tsi": datetime.now(TSI_TZ).strftime("%Y-%m-%d %H:%M:%S TSİ"),
-            "filter_start_tsi": start_time_tsi.strftime("%Y-%m-%d %H:%M:%S TSİ") if start_time_tsi else "",
-            "filter_description": filter_desc,
-            "total_domains": sum(len(c["domains"]) for c in TARGET_DOMAINS_BY_CATEGORY.values()),
-            "total_articles_collected": total_articles_count,
-            "diagnostics": health_report,
-            "categories": all_data
-        }
-
-        if auto_save_paths:
-            if "categorized" in auto_save_paths:
-                self.save_to_json(final_result, auto_save_paths["categorized"])
-            if "flat" in auto_save_paths:
-                self.save_to_json(self.flatten_articles(final_result), auto_save_paths["flat"])
-
-        return final_result
-
-    @staticmethod
-    def generate_health_report(categories: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Tarama sonuçlarına göre kaynakların sağlık ve bloklanma raporunu çıkarır.
-        """
-        healthy = []
-        zero_news = []
-        blocked_or_empty = []
-
-        for cat_name, domains_data in categories.items():
-            for domain, info in domains_data.items():
-                count = info.get("count", 0)
-                articles = info.get("articles", [])
-                
-                if count == 0 or len(articles) == 0:
-                    zero_news.append({"domain": domain, "category": cat_name, "reason": "0 haber bulundu"})
-                    continue
-                
-                empty_texts = sum(1 for a in articles if not a.get("full_text"))
-                if empty_texts == len(articles):
-                    blocked_or_empty.append({
-                        "domain": domain, 
-                        "category": cat_name, 
-                        "total": len(articles), 
-                        "empty": empty_texts,
-                        "reason": "Tüm haber metinleri boş (Bot/Paywall/Sayfa yapısı)"
-                    })
-                elif empty_texts > 0:
-                    blocked_or_empty.append({
-                        "domain": domain, 
-                        "category": cat_name, 
-                        "total": len(articles), 
-                        "empty": empty_texts,
-                        "reason": f"{len(articles)} haberin {empty_texts} tanesinde metin boş"
-                    })
-                else:
-                    healthy.append({"domain": domain, "category": cat_name, "articles_count": len(articles)})
-
-        suggested_removals = [item["domain"] for item in zero_news] + [item["domain"] for item in blocked_or_empty if item["empty"] == item["total"]]
-
-        return {
-            "healthy_domains_count": len(healthy),
-            "zero_news_domains": zero_news,
-            "blocked_or_empty_domains": blocked_or_empty,
-            "suggested_removals": suggested_removals
-        }
-
-    @staticmethod
-    def flatten_articles(results: Dict[str, Any]) -> List[Dict[str, Any]]:
-        """
-        Kategorili sonuç yapısını düz bir haber listesine dönüştürür.
-        Örnek çıktı: [ {"category": "turkey_economy", "domain": "bloomberght.com", "title": "..."}, ... ]
-        """
-        flat_list = []
-        categories = results.get("categories", {})
-        for category_name, domains_data in categories.items():
-            for domain, domain_info in domains_data.items():
-                articles = domain_info.get("articles", [])
-                for article in articles:
-                    article_copy = dict(article)
-                    article_copy["category"] = category_name
-                    flat_list.append(article_copy)
-        return flat_list
-
-    @staticmethod
-    def save_to_json(data: Any, filepath: str) -> str:
-        """
-        Veriyi düzgün Türkçe karakterler ve okunaklı girintileme (indentation) ile JSON dosyasına kaydeder.
-        """
-        with open(filepath, "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=4)
-        return filepath
-
-if __name__ == "__main__":
-    scraper = UniversalGoogleNewsScraper()
-    
-    # 43 alan adının tamamını tarıyoruz (her domain için maks 3 adet bugün yayınlanmış haber):
-    results = scraper.fetch_all_categories(max_articles_per_domain=3, only_today=True)
-    flat_articles = scraper.flatten_articles(results)
-
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    output_categorized = os.path.join(script_dir, "google_news_query_results.json")
-    output_flat_list = os.path.join(script_dir, "google_news_flat_list.json")
-    
-    # Hem kategorili detaylı veriyi hem de doğrudan dizi (array) olan düz liste JSON'ı kaydediyoruz:
-    scraper.save_to_json(results, output_categorized)
-    scraper.save_to_json(flat_articles, output_flat_list)
-
-    print(f"\n🎉 43 Kaynaktan Bugün Yayınlanan {len(flat_articles)} Adet Haber Başarıyla Çekildi!")
-    print(f"📁 Kategorili Çıktı: '{output_categorized}'")
-    print(f"📁 Düz Liste JSON Çıktısı: '{output_flat_list}'", flush=True)
-
-
