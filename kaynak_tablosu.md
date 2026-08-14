@@ -25,3 +25,18 @@
 | RUSYA EKONOMİ | Kommersant | https://www.kommersant.ru | https://www.kommersant.ru/RSS/news.xml | 15 | Maks 15 Limit | Doğrudan RSS | Aktif |
 | RUSYA EKONOMİ | Vedomosti | https://www.vedomosti.ru | https://vedomosti.ru/rss/articles | 15 | Maks 15 Limit | Doğrudan RSS | Aktif |
 | RUSYA EKONOMİ | Interfax | https://www.interfax.ru | https://www.interfax.ru/rss | 15 | Maks 15 Limit | Doğrudan RSS | Aktif |
+
+---
+
+## 📊 Kategori Bazlı Genel Özet Tablosu
+
+| No | Kategori | Dil / Ülke | Aktif Site Sayısı | Dolu Haber Sayısı | Kategori Payı (%) |
+| :---: | :--- | :---: | :---: | :---: | :---: |
+| **1** | **ANTALYA TURİZM (antalya_news)** | TR / TR | **4 Site** | **107 Haber** | **%31.9** |
+| **2** | **TÜRKİYE TURİZM (turkey_tourism)** | TR / TR | **5 Site** | **78 Haber** | **%23.3** |
+| **3** | **TÜRKİYE EKONOMİ (turkey_economy)** | TR / TR | **3 Site** | **49 Haber** | **%14.6** |
+| **4** | **ALMANYA TURİZM (germany_tourism)** | DE / DE | **2 Site** | **27 Haber** | **%8.1** |
+| **5** | **ALMANYA EKONOMİ (germany_economy)** | DE / DE | **3 Site** | **47 Haber** | **%14.0** |
+| **6** | **RUSYA TURİZM (russia_tourism)** | RU / RU | **3 Site** | **39 Haber** | **%11.6** |
+| **7** | **RUSYA EKONOMİ (russia_economy)** | RU / RU | **3 Site** | **45 Haber** | **%13.4** |
+| 🏁 | **GENEL TOPLAM** | **7 Kategori** | **23 SİTE** | **335 HABER** | **%100.0** |
