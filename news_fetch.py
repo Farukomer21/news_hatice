@@ -52,12 +52,10 @@ TARGET_DOMAINS_BY_CATEGORY = {
     "antalya_news": {
         "lang": "tr", "gl": "TR", "ceid": "TR:tr",
         "domains": [
-            # En Popüler 5 Antalya Turizm Kaynağı
             "turizmdays.com",
             "turizmgazetesi.com",
             "turizmguncel.com",
-            "turizmajansi.com",
-            "tourismjournal.com.tr"
+            "turizmajansi.com"
         ]
     },
     "turkey_tourism": {
