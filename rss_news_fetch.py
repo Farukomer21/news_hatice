@@ -115,6 +115,8 @@ EXCLUDED_DOMAINS = {
 # Kaynak bazlı özel haber sayısı kısıtları (aşırı haber üreten dev portallar için)
 DOMAIN_ARTICLE_LIMITS = {
     "kommersant.ru": 30,
+    "bloomberght.com": 30,
+    "ekonomim.com": 30,
 }
 
 # Gövde metni bu uzunluğun altındaysa çerez/JS uyarısı sayılır, kabul edilmez.
