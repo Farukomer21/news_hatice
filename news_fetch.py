@@ -57,11 +57,7 @@ TARGET_DOMAINS_BY_CATEGORY = {
             "turizmgazetesi.com",
             "turizmguncel.com",
             "turizmajansi.com",
-            "tourismjournal.com.tr",
-            # En Popüler 3 Genel Antalya Haber Kaynağı
-            "akdenizmanset.com.tr",
-            "gunhaber.com.tr",
-            "yenialanya.com"
+            "tourismjournal.com.tr"
         ]
     },
     "turkey_tourism": {
