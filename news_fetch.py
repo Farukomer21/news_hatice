@@ -99,7 +99,7 @@ TARGET_DOMAINS_BY_CATEGORY = {
     "russia_economy": {
         "lang": "ru", "gl": "RU", "ceid": "RU:ru",
         "domains": [
-            "rbc.ru", "kommersant.ru", "vedomosti.ru", "forbes.ru", "finmarket.ru", "interfax.ru"
+            "kommersant.ru", "vedomosti.ru", "interfax.ru"
         ]
     }
 }
