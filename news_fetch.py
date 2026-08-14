@@ -1,10 +1,12 @@
 import os
 import json
 import time
+import re
 import urllib.parse
 from datetime import datetime, timezone, timedelta
 from email.utils import parsedate_to_datetime
 from typing import List, Dict, Any, Optional
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import requests
 from bs4 import BeautifulSoup
 from googlenewsdecoder import new_decoderv1
@@ -17,6 +19,12 @@ def get_today_start_tsi() -> datetime:
     """TSİ (UTC+3) saat dilimine göre bugünün gece 00:00:00 zamanını döndürür."""
     now_tsi = datetime.now(TSI_TZ)
     return now_tsi.replace(hour=0, minute=0, second=0, microsecond=0)
+
+def get_yesterday_noon_tsi() -> datetime:
+    """TSİ (UTC+3) saat dilimine göre dünün öğlen 12:00:00 zamanını döndürür."""
+    now_tsi = datetime.now(TSI_TZ)
+    yesterday_tsi = now_tsi - timedelta(days=1)
+    return yesterday_tsi.replace(hour=12, minute=0, second=0, microsecond=0)
 
 def parse_pub_date_to_tsi(pub_date_str: str) -> Optional[datetime]:
     """
@@ -37,50 +45,60 @@ TARGET_DOMAINS_BY_CATEGORY = {
     "antalya_news": {
         "lang": "tr", "gl": "TR", "ceid": "TR:tr",
         "domains": [
-            "akdenizgercek.com.tr",
-            "akdenizmanset.com.tr",
-            "antalyanews.com.tr",
-            "gunhaber.com.tr",
-            "lidergazete.com",
-            "nehir.net",
+            # Antalya Turizm Odaklı Kaynaklar
+            "hurriyet.com.tr Antalya turizm",
+            "milliyet.com.tr Antalya turizm",
+            "tourismjournal.com.tr",
+            "turizmajansi.com",
             "turizmdays.com",
             "turizmgazetesi.com",
             "turizmguncel.com",
+            # En Popüler 3 Genel Antalya Haber Kaynağı
+            "akdenizmanset.com.tr",
+            "gunhaber.com.tr",
             "yenialanya.com"
         ]
     },
     "turkey_tourism": {
         "lang": "tr", "gl": "TR", "ceid": "TR:tr",
         "domains": [
-            "turizmguncel.com", "turizmgazetesi.com", "turizmajansi.com", "gmdergi.com",
-            "tourexpi.com", "turizmgunlugu.com", "tourismtoday.net", "turizmaktuel.com",
-            "turizmnews.com", "turizmekonomi.com", "turizminsesi.com", "turizmdosyasi.com"
+            # En Popüler 10 Türkiye Turizm Kaynağı
+            "turizmguncel.com",
+            "turizmgunlugu.com",
+            "turizmgazetesi.com",
+            "turizmajansi.com",
+            "turizmaktuel.com",
+            "tourismtoday.net",
+            "tourismjournal.com.tr",
+            "aktob.org.tr",
+            "turizminsesi.com",
+            "turizmhabermerkezi.net"
         ]
     },
     "turkey_economy": {
         "lang": "tr", "gl": "TR", "ceid": "TR:tr",
         "domains": [
-            "bloomberght.com", "ekonomim.com", "news.foreks.com", "paraanaliz.com",
-            "tr.investing.com", "sabah.com.tr", "milliyet.com.tr"
+            "bloomberght.com", "ekonomim.com", "paraanaliz.com",
+            "sabah.com.tr", "milliyet.com.tr"
         ]
     },
     "germany_tourism": {
         "lang": "de", "gl": "DE", "ceid": "DE:de",
         "domains": [
-            "fvw.de", "touristik-aktuell.de", "reisevor9.de", "travelone.de",
-            "trvlcounter.de", "travelbook.de", "germany.travel"
+            "fvw.de", "touristik-aktuell.de", "reisevor9.de",
+            "trvlcounter.de", "travelbook.de"
         ]
     },
     "germany_economy": {
         "lang": "de", "gl": "DE", "ceid": "DE:de",
         "domains": [
-            "handelsblatt.com", "wiwo.de", "boersen-zeitung.de", "finanzen.net", "manager-magazin.de"
+            "handelsblatt.com", "wiwo.de", "boersen-zeitung.de"
         ]
     },
     "russia_tourism": {
         "lang": "ru", "gl": "RU", "ceid": "RU:ru",
         "domains": [
-            "atorus.ru", "tourdom.ru", "profi.travel", "ratanews.ru", "trn-news.ru", "interfax-russia.ru"
+            "atorus.ru", "tourdom.ru", "profi.travel", "ratanews.ru", "trn-news.ru"
         ]
     },
     "russia_economy": {
@@ -100,16 +118,19 @@ class UniversalGoogleNewsScraper:
     @staticmethod
     def fetch_today_news_for_domain(
         domain: str, 
-        period: str = "1d", 
-        max_articles: int = 5,
+        period: str = "2d", 
+        max_articles: Optional[int] = None,
         lang: str = "tr",
         gl: str = "TR",
         ceid: str = "TR:tr",
-        only_today: bool = True,
+        since_yesterday_noon: bool = True,
+        only_today: bool = False,
         category: str = ""
     ) -> List[Dict[str, Any]]:
         """
-        Verilen alan adı (domain) için Google News sorgusu ile son haberleri getirir.
+        Verilen alan adı (domain) için Google News sorgusu ile haberleri getirir.
+        max_articles=None ise kısıtlama olmaksızın tüm uygun haberleri çeker.
+        since_yesterday_noon=True ise dünün öğlen 12:00'sinden itibaren yayınlanan haberleri filtreler.
         only_today=True ise sadece bugün TSİ gece 00:00'dan sonra yayınlanan haberleri filtreler.
         """
         query_str = f"site:{domain} when:{period}"
@@ -120,10 +141,19 @@ class UniversalGoogleNewsScraper:
             "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         }
 
-        today_start_tsi = get_today_start_tsi()
+        if since_yesterday_noon:
+            start_filter_tsi = get_yesterday_noon_tsi()
+            filter_label = f"TSİ Dün Öğlen 12:00 Başlangıcı: {start_filter_tsi.strftime('%Y-%m-%d %H:%M:%S TSİ')}"
+        elif only_today:
+            start_filter_tsi = get_today_start_tsi()
+            filter_label = f"TSİ Bugün Başlangıcı (00:00): {start_filter_tsi.strftime('%Y-%m-%d %H:%M:%S TSİ')}"
+        else:
+            start_filter_tsi = None
+            filter_label = None
+
         print(f"\n🔍 Google News Query: '{domain}' (Sorgu: when:{period}, Dil: {lang})", flush=True)
-        if only_today:
-            print(f" ⏱️ TSİ Bugün Başlangıcı (00:00): {today_start_tsi.strftime('%Y-%m-%d %H:%M:%S TSİ')}", flush=True)
+        if filter_label:
+            print(f" ⏱️ {filter_label}", flush=True)
 
         try:
             res = requests.get(rss_url, headers=headers, timeout=15)
@@ -135,42 +165,124 @@ class UniversalGoogleNewsScraper:
             items = soup.find_all("item")
             print(f"🔗 Google News toplam {len(items)} adet bağlantı buldu.", flush=True)
 
-            articles = []
+            filtered_items = []
             for item in items:
                 pub_date = item.find("pubDate").text if item.find("pubDate") else ""
                 pub_dt_tsi = parse_pub_date_to_tsi(pub_date)
 
-                # Bugün filtresi: TSİ gece 00:00'dan öncesini atla
-                if only_today and pub_dt_tsi and pub_dt_tsi < today_start_tsi:
+                # Zaman filtresi: Başlangıç tarihinden öncesini atla
+                if start_filter_tsi and pub_dt_tsi and pub_dt_tsi < start_filter_tsi:
                     continue
 
                 title = item.find("title").text if item.find("title") else "Başlık Yok"
                 google_link = item.find("link").text if item.find("link") else ""
 
-                idx = len(articles) + 1
-                print(f" [{idx}/{max_articles}] İşleniyor: {title[:50]}...", flush=True)
-                if pub_dt_tsi:
-                    print(f"   📅 Yayın Tarihi (TSİ): {pub_dt_tsi.strftime('%Y-%m-%d %H:%M:%S TSİ')}", flush=True)
+                filtered_items.append((title, google_link, pub_date, pub_dt_tsi))
+                if max_articles and len(filtered_items) >= max_articles:
+                    break
 
-                # Google News yönlendirme linkini gerçek haber URL'ine çözümlüyoruz
-                real_url = google_link
+            print(f"   🎯 Zaman filtresine uyan {len(filtered_items)} haber paralel olarak indiriliyor...", flush=True)
+
+            def slugify_words(text: str) -> set:
+                tr_map = str.maketrans('çğıöşüÇĞİÖŞÜ', 'cgiosuCGIOSU')
+                clean = text.translate(tr_map).lower()
+                return set(re.findall(r'[a-z0-9]{3,}', clean))
+
+            def resolve_news_url_and_text(dom_str: str, art_title: str, g_link: str):
+                # 1. Google Decoder denemesi
                 try:
-                    decoded_res = new_decoderv1(google_link)
-                    if decoded_res and decoded_res.get("status") and decoded_res.get("decoded_url"):
-                        real_url = decoded_res["decoded_url"]
-                except Exception as e:
-                    print(f"   ⚠️ Link çözümlenemedi, orijinal link kullanılacak: {e}", flush=True)
+                    dec = new_decoderv1(g_link)
+                    if dec and dec.get("status") and dec.get("decoded_url"):
+                        real = dec["decoded_url"]
+                        dl = trafilatura.fetch_url(real)
+                        txt = trafilatura.extract(dl) if dl else ""
+                        if txt and len(txt) > 100:
+                            return real, txt
+                except Exception:
+                    pass
 
-                # Gerçek URL'den tam metin (full body text) çekiyoruz
-                full_text = ""
+                clean_dom = dom_str.split()[0].strip()
+
+                # 2. Siteden doğrudan başlık eşleştirme
+                test_urls = [
+                    f"https://www.{clean_dom}/",
+                    f"https://{clean_dom}/",
+                    f"https://www.{clean_dom}/haberler",
+                    f"https://www.{clean_dom}/turizm"
+                ]
+
+                title_words = slugify_words(art_title)
+                title_words.discard("hurriyet")
+                title_words.discard("milliyet")
+
+                for site_url in test_urls:
+                    try:
+                        r = requests.get(
+                            site_url, 
+                            headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"}, 
+                            timeout=5
+                        )
+                        if r.status_code != 200:
+                            continue
+
+                        soup = BeautifulSoup(r.text, "html.parser")
+                        best_link = None
+                        best_score = 0
+
+                        for a in soup.find_all("a"):
+                            href = a.get("href", "")
+                            text = a.text.strip()
+                            if not href or href == "#" or href.startswith("javascript:"):
+                                continue
+
+                            link_words = slugify_words(href + " " + text)
+                            common = title_words.intersection(link_words)
+                            score = len(common)
+
+                            if score > best_score and score >= 2:
+                                best_score = score
+                                if href.startswith("http"):
+                                    best_link = href
+                                elif href.startswith("/"):
+                                    best_link = site_url.rstrip("/") + href
+
+                        if best_link and best_score >= 2:
+                            dl = trafilatura.fetch_url(best_link)
+                            txt = trafilatura.extract(dl) if dl else ""
+                            if txt and len(txt) > 100:
+                                return best_link, txt
+                    except Exception:
+                        pass
+
+                # 3. Site içi arama
                 try:
-                    downloaded = trafilatura.fetch_url(real_url)
-                    if downloaded:
-                        full_text = trafilatura.extract(downloaded, include_comments=False, include_tables=False) or ""
-                except Exception as e:
-                    print(f"   ⚠️ Metin çekilirken hata: {e}", flush=True)
+                    clean_search = " ".join(list(title_words)[:5])
+                    search_urls = [
+                        f"https://www.{clean_dom}/?s={urllib.parse.quote(clean_search)}",
+                        f"https://www.{clean_dom}/arama?q={urllib.parse.quote(clean_search)}"
+                    ]
+                    for su in search_urls:
+                        r = requests.get(su, headers={"User-Agent": "Mozilla/5.0"}, timeout=5)
+                        if r.status_code != 200:
+                            continue
+                        soup = BeautifulSoup(r.text, "html.parser")
+                        for a in soup.find_all("a"):
+                            href = a.get("href", "")
+                            if clean_dom in href and len(href) > len(clean_dom) + 15:
+                                dl = trafilatura.fetch_url(href)
+                                txt = trafilatura.extract(dl) if dl else ""
+                                if txt and len(txt) > 100:
+                                    return href, txt
+                except Exception:
+                    pass
 
-                articles.append({
+                return g_link, ""
+
+            def fetch_single_article(item_tuple):
+                title, google_link, pub_date, pub_dt_tsi = item_tuple
+                real_url, full_text = resolve_news_url_and_text(domain, title, google_link)
+
+                return {
                     "category": category,
                     "domain": domain,
                     "title": title,
@@ -181,63 +293,157 @@ class UniversalGoogleNewsScraper:
                     "pub_timestamp_iso": pub_dt_tsi.isoformat() if pub_dt_tsi else "",
                     "full_text_length": len(full_text),
                     "full_text": full_text
-                })
+                }
 
+            articles = []
+            with ThreadPoolExecutor(max_workers=5) as executor:
+                results = list(executor.map(fetch_single_article, filtered_items))
+                articles.extend(results)
 
-                if len(articles) >= max_articles:
-                    break
-
-                time.sleep(0.3)
-
-            print(f"✅ '{domain}' için TSİ bugün yayınlanan {len(articles)} adet haber alındı.", flush=True)
+            print(f"✅ '{domain}' için {len(articles)} adet haber eksiksiz alındı.", flush=True)
             return articles
 
         except Exception as e:
             print(f"❌ '{domain}' taranırken hata oluştu: {e}", flush=True)
             return []
 
-    def fetch_all_categories(self, max_articles_per_domain: int = 5, only_today: bool = True) -> Dict[str, Any]:
+    def fetch_all_categories(
+        self, 
+        max_articles_per_domain: Optional[int] = None, 
+        since_yesterday_noon: bool = True,
+        only_today: bool = False,
+        auto_save_paths: Optional[Dict[str, str]] = None
+    ) -> Dict[str, Any]:
         """
-        Tüm ülkelerdeki ve kategorilerdeki 43 kaynağın bugün (TSİ 00:00'dan itibaren) yayınlanan haberlerini sırayla çeker.
+        Tüm ülkelerdeki ve kategorilerdeki kaynakların dün öğlen 12:00'den itibaren yayınlanan haberlerini sırayla çeker.
+        auto_save_paths verilirse her domain bittiğinde dosyaları diske anlık otomatik kaydeder.
         """
         all_data = {}
         now_tsi = datetime.now(TSI_TZ)
-        today_start_tsi = get_today_start_tsi()
         total_articles_count = 0
 
-        for category_name, config in TARGET_DOMAINS_BY_CATEGORY.items():
-            print(f"\n==================================================")
-            print(f"🌐 Kategori Taranıyor: {category_name.upper()}")
-            print(f"==================================================", flush=True)
-            
-            category_results = {}
-            for dom in config["domains"]:
-                news_items = self.fetch_today_news_for_domain(
-                    domain=dom,
-                    period="1d",
-                    max_articles=max_articles_per_domain,
-                    lang=config["lang"],
-                    gl=config["gl"],
-                    ceid=config["ceid"],
-                    only_today=only_today,
-                    category=category_name
-                )
+        if since_yesterday_noon:
+            start_time_tsi = get_yesterday_noon_tsi()
+            filter_desc = f"Dün Öğlen 12:00'den İtibaren ({start_time_tsi.strftime('%Y-%m-%d %H:%M:%S TSİ')})"
+        elif only_today:
+            start_time_tsi = get_today_start_tsi()
+            filter_desc = f"Bugün 00:00'dan İtibaren ({start_time_tsi.strftime('%Y-%m-%d %H:%M:%S TSİ')})"
+        else:
+            start_time_tsi = None
+            filter_desc = "Tüm Zamanlar"
 
+        try:
+            for category_name, config in TARGET_DOMAINS_BY_CATEGORY.items():
+                print(f"\n==================================================")
+                print(f"🌐 Kategori Taranıyor: {category_name.upper()}")
+                print(f"==================================================", flush=True)
+                
+                category_results = {}
+                for dom in config["domains"]:
+                    news_items = self.fetch_today_news_for_domain(
+                        domain=dom,
+                        period="2d",
+                        max_articles=max_articles_per_domain,
+                        lang=config["lang"],
+                        gl=config["gl"],
+                        ceid=config["ceid"],
+                        since_yesterday_noon=since_yesterday_noon,
+                        only_today=only_today,
+                        category=category_name
+                    )
 
-                category_results[dom] = {
-                    "count": len(news_items),
-                    "articles": news_items
-                }
-                total_articles_count += len(news_items)
-            all_data[category_name] = category_results
+                    category_results[dom] = {
+                        "count": len(news_items),
+                        "articles": news_items
+                    }
+                    total_articles_count += len(news_items)
 
-        return {
-            "fetch_time_tsi": now_tsi.strftime("%Y-%m-%d %H:%M:%S TSİ"),
-            "today_start_tsi": today_start_tsi.strftime("%Y-%m-%d %H:%M:%S TSİ"),
-            "only_today_filtered": only_today,
+                    # Anlık Otomatik Kaydetme (Auto-save)
+                    all_data[category_name] = category_results
+                    if auto_save_paths:
+                        current_out = {
+                            "fetch_time_tsi": datetime.now(TSI_TZ).strftime("%Y-%m-%d %H:%M:%S TSİ"),
+                            "filter_start_tsi": start_time_tsi.strftime("%Y-%m-%d %H:%M:%S TSİ") if start_time_tsi else "",
+                            "filter_description": filter_desc,
+                            "total_domains": sum(len(c["domains"]) for c in TARGET_DOMAINS_BY_CATEGORY.values()),
+                            "total_articles_collected": total_articles_count,
+                            "categories": all_data
+                        }
+                        if "categorized" in auto_save_paths:
+                            self.save_to_json(current_out, auto_save_paths["categorized"])
+                        if "flat" in auto_save_paths:
+                            self.save_to_json(self.flatten_articles(current_out), auto_save_paths["flat"])
+
+                all_data[category_name] = category_results
+
+        except KeyboardInterrupt:
+            print("\n⚠️ Tarama kullanıcı tarafından durduruldu! Şimdiye kadar toplanan tüm haberler kaydediliyor...", flush=True)
+
+        health_report = self.generate_health_report(all_data)
+
+        final_result = {
+            "fetch_time_tsi": datetime.now(TSI_TZ).strftime("%Y-%m-%d %H:%M:%S TSİ"),
+            "filter_start_tsi": start_time_tsi.strftime("%Y-%m-%d %H:%M:%S TSİ") if start_time_tsi else "",
+            "filter_description": filter_desc,
             "total_domains": sum(len(c["domains"]) for c in TARGET_DOMAINS_BY_CATEGORY.values()),
             "total_articles_collected": total_articles_count,
+            "diagnostics": health_report,
             "categories": all_data
+        }
+
+        if auto_save_paths:
+            if "categorized" in auto_save_paths:
+                self.save_to_json(final_result, auto_save_paths["categorized"])
+            if "flat" in auto_save_paths:
+                self.save_to_json(self.flatten_articles(final_result), auto_save_paths["flat"])
+
+        return final_result
+
+    @staticmethod
+    def generate_health_report(categories: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Tarama sonuçlarına göre kaynakların sağlık ve bloklanma raporunu çıkarır.
+        """
+        healthy = []
+        zero_news = []
+        blocked_or_empty = []
+
+        for cat_name, domains_data in categories.items():
+            for domain, info in domains_data.items():
+                count = info.get("count", 0)
+                articles = info.get("articles", [])
+                
+                if count == 0 or len(articles) == 0:
+                    zero_news.append({"domain": domain, "category": cat_name, "reason": "0 haber bulundu"})
+                    continue
+                
+                empty_texts = sum(1 for a in articles if not a.get("full_text"))
+                if empty_texts == len(articles):
+                    blocked_or_empty.append({
+                        "domain": domain, 
+                        "category": cat_name, 
+                        "total": len(articles), 
+                        "empty": empty_texts,
+                        "reason": "Tüm haber metinleri boş (Bot/Paywall/Sayfa yapısı)"
+                    })
+                elif empty_texts > 0:
+                    blocked_or_empty.append({
+                        "domain": domain, 
+                        "category": cat_name, 
+                        "total": len(articles), 
+                        "empty": empty_texts,
+                        "reason": f"{len(articles)} haberin {empty_texts} tanesinde metin boş"
+                    })
+                else:
+                    healthy.append({"domain": domain, "category": cat_name, "articles_count": len(articles)})
+
+        suggested_removals = [item["domain"] for item in zero_news] + [item["domain"] for item in blocked_or_empty if item["empty"] == item["total"]]
+
+        return {
+            "healthy_domains_count": len(healthy),
+            "zero_news_domains": zero_news,
+            "blocked_or_empty_domains": blocked_or_empty,
+            "suggested_removals": suggested_removals
         }
 
     @staticmethod
