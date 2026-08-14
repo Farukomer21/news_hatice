@@ -1,0 +1,43 @@
+﻿KATEGORİ,KAYNAK,TOPLAM,TAM METİN,ÖZET,BOŞ,ORAN,YÖNTEM
+antalya_news,turizmdays.com,68,67,0,1,%99,rss
+antalya_news,gunhaber.com.tr,44,39,0,5,%89,google
+antalya_news,akdenizmanset.com.tr,20,20,0,0,%100,rss
+antalya_news,yenialanya.com,20,20,0,0,%100,rss
+antalya_news,turizmgazetesi.com,16,11,0,5,%69,google
+antalya_news,tourismjournal.com.tr,11,11,0,0,%100,google
+antalya_news,turizmajansi.com,10,10,0,0,%100,rss
+antalya_news,turizmguncel.com,9,9,0,0,%100,rss
+antalya_news,hurriyet.com.tr Antalya turizm,4,4,0,0,%100,rss
+antalya_news,milliyet.com.tr Antalya turizm,1,1,0,0,%100,rss
+germany_economy,handelsblatt.com,50,49,1,0,%100,rss
+germany_economy,wiwo.de,20,20,0,0,%100,rss
+germany_economy,boersen-zeitung.de,7,7,0,0,%100,google
+germany_tourism,reisevor9.de,20,9,0,11,%45,rss
+germany_tourism,fvw.de,16,16,0,0,%100,rss
+germany_tourism,touristik-aktuell.de,11,11,0,0,%100,rss
+germany_tourism,travelbook.de,3,2,0,1,%67,google
+russia_economy,kommersant.ru,206,206,0,0,%100,rss
+russia_economy,rbc.ru,30,0,29,1,%97,rss
+russia_economy,vedomosti.ru,29,29,0,0,%100,rss
+russia_economy,interfax.ru,25,25,0,0,%100,rss
+russia_economy,forbes.ru,17,17,0,0,%100,rss
+russia_economy,finmarket.ru,4,4,0,0,%100,rss
+russia_tourism,tourdom.ru,30,30,0,0,%100,rss
+russia_tourism,atorus.ru,23,3,0,20,%13,google
+russia_tourism,profi.travel,10,1,0,9,%10,google
+russia_tourism,ratanews.ru,5,5,0,0,%100,rss
+russia_tourism,trn-news.ru,4,4,0,0,%100,rss
+turkey_economy,bloomberght.com,54,24,0,30,%44,google
+turkey_economy,ekonomim.com,49,49,0,0,%100,rss
+turkey_economy,milliyet.com.tr,15,15,0,0,%100,rss
+turkey_economy,paraanaliz.com,12,9,0,3,%75,google
+turkey_economy,sabah.com.tr,10,10,0,0,%100,rss
+turkey_tourism,turizmgazetesi.com,16,8,0,8,%50,google
+turkey_tourism,tourismtoday.net,13,13,0,0,%100,rss
+turkey_tourism,tourismjournal.com.tr,11,11,0,0,%100,google
+turkey_tourism,turizmajansi.com,10,10,0,0,%100,rss
+turkey_tourism,turizmguncel.com,9,9,0,0,%100,rss
+turkey_tourism,turizmaktuel.com,8,8,0,0,%100,rss
+turkey_tourism,turizmgunlugu.com,5,5,0,0,%100,rss
+turkey_tourism,turizminsesi.com,1,1,0,0,%100,rss
+turkey_tourism,turizmhabermerkezi.net,1,1,0,0,%100,rss

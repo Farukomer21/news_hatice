@@ -53,10 +53,15 @@ TARGET_DOMAINS_BY_CATEGORY = {
             "turizmdays.com",
             "turizmgazetesi.com",
             "turizmguncel.com",
+            "turizmnews.com",
+            "turizmgundemi.com",
             # En Popüler 3 Genel Antalya Haber Kaynağı
             "akdenizmanset.com.tr",
             "gunhaber.com.tr",
-            "yenialanya.com"
+            "yenialanya.com",
+            # Yerel portal; anahtar kelimelerle sadece turizm haberleri süzülüyor.
+            # Kelimeler VEYA mantığıyla eşleşir; tek "turizm" kelimesi fazla dar kalıyordu.
+            "haberantalya.com turizm turist otel tatil konaklama havalimanı"
         ]
     },
     "turkey_tourism": {
