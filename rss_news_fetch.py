@@ -114,12 +114,14 @@ EXCLUDED_DOMAINS = {
 
 # Kaynak bazlı özel haber sayısı kısıtları (aşırı haber üreten dev portallar için)
 DOMAIN_ARTICLE_LIMITS = {
+    "turizmdays.com": 50,
+    "bloomberght.com": 20,
+    "ekonomim.com": 20,
+    "handelsblatt.com": 20,
+    "wiwo.de": 20,
     "kommersant.ru": 15,
     "vedomosti.ru": 15,
     "interfax.ru": 15,
-    "bloomberght.com": 20,
-    "ekonomim.com": 20,
-    "handelsblatt.com": 30,
 }
 
 # Gövde metni bu uzunluğun altındaysa çerez/JS uyarısı sayılır, kabul edilmez.
