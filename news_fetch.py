@@ -78,8 +78,7 @@ TARGET_DOMAINS_BY_CATEGORY = {
     "germany_tourism": {
         "lang": "de", "gl": "DE", "ceid": "DE:de",
         "domains": [
-            "fvw.de", "touristik-aktuell.de", "reisevor9.de",
-            "trvlcounter.de", "travelbook.de"
+            "fvw.de", "touristik-aktuell.de"
         ]
     },
     "germany_economy": {
@@ -91,7 +90,7 @@ TARGET_DOMAINS_BY_CATEGORY = {
     "russia_tourism": {
         "lang": "ru", "gl": "RU", "ceid": "RU:ru",
         "domains": [
-            "atorus.ru", "tourdom.ru", "profi.travel", "ratanews.ru", "trn-news.ru"
+            "tourdom.ru", "ratanews.ru", "trn-news.ru"
         ]
     },
     "russia_economy": {
