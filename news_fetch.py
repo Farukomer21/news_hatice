@@ -74,8 +74,7 @@ TARGET_DOMAINS_BY_CATEGORY = {
     "turkey_economy": {
         "lang": "tr", "gl": "TR", "ceid": "TR:tr",
         "domains": [
-            "bloomberght.com", "ekonomim.com", "paraanaliz.com",
-            "sabah.com.tr", "milliyet.com.tr"
+            "bloomberght.com", "ekonomim.com", "paraanaliz.com"
         ]
     },
     "germany_tourism": {
