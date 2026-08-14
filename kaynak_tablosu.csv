@@ -1,24 +1,24 @@
-KATEGORİ,KAYNAK,HEDEF / DOLU HABER,LİMİT DURUMU,YÖNTEM,DOLULUK ORANI,DURUM
-antalya_news,turizmdays.com,50,Maks 50 Limit,rss,%100,Aktif
-antalya_news,turizmgazetesi.com,19,Tüm Dolu Haberler,rss,%100,Aktif
-antalya_news,turizmajansi.com,20,Tüm Dolu Haberler,rss,%100,Aktif
-antalya_news,turizmguncel.com,18,Tüm Dolu Haberler,rss,%100,Aktif
-turkey_tourism,turizmajansi.com,20,Tüm Dolu Haberler,rss,%100,Aktif
-turkey_tourism,turizmgazetesi.com,19,Tüm Dolu Haberler,rss,%100,Aktif
-turkey_tourism,turizmguncel.com,18,Tüm Dolu Haberler,rss,%100,Aktif
-turkey_tourism,tourismtoday.net,13,Tüm Dolu Haberler,rss,%100,Aktif
-turkey_tourism,turizmaktuel.com,8,Tüm Dolu Haberler,rss,%100,Aktif
-turkey_economy,bloomberght.com,20,Maks 20 Limit,rss/google,%100,Aktif
-turkey_economy,ekonomim.com,20,Maks 20 Limit,rss,%100,Aktif
-turkey_economy,paraanaliz.com,9,Tüm Dolu Haberler,rss,%100,Aktif
-germany_tourism,fvw.de,16,Tüm Dolu Haberler,rss,%100,Aktif
-germany_tourism,touristik-aktuell.de,11,Tüm Dolu Haberler,rss,%100,Aktif
-germany_economy,handelsblatt.com,20,Maks 20 Limit,rss,%100,Aktif
-germany_economy,wiwo.de,20,Maks 20 Limit,rss,%100,Aktif
-germany_economy,boersen-zeitung.de,7,Tüm Dolu Haberler,google,%100,Aktif
-russia_tourism,tourdom.ru,30,Tüm Dolu Haberler,rss,%100,Aktif
-russia_tourism,ratanews.ru,5,Tüm Dolu Haberler,rss,%100,Aktif
-russia_tourism,trn-news.ru,4,Tüm Dolu Haberler,rss,%100,Aktif
-russia_economy,kommersant.ru,15,Maks 15 Limit,rss,%100,Aktif
-russia_economy,vedomosti.ru,15,Maks 15 Limit,rss,%100,Aktif
-russia_economy,interfax.ru,15,Maks 15 Limit,rss,%100,Aktif
+KATEGORİ,KAYNAK ADI,SİTE TAM URL,RSS / BESLEME URL,HEDEF / DOLU HABER,LİMİT DURUMU,YÖNTEM,DURUM
+antalya_news,Turizmdays,https://www.turizmdays.com,https://www.turizmdays.com/rss.xml,50,Maks 50 Limit,RSS,Aktif
+antalya_news,Turizm Gazetesi,https://www.turizmgazetesi.com,https://www.turizmgazetesi.com/rss,19,Tüm Dolu Haberler,RSS,Aktif
+antalya_news,Turizm Ajansı,https://www.turizmajansi.com,https://www.turizmajansi.com/rss,20,Tüm Dolu Haberler,RSS,Aktif
+antalya_news,Turizm Güncel,https://www.turizmguncel.com,https://www.turizmguncel.com/rss.xml,18,Tüm Dolu Haberler,RSS,Aktif
+turkey_tourism,Turizm Ajansı,https://www.turizmajansi.com,https://www.turizmajansi.com/rss,20,Tüm Dolu Haberler,RSS,Aktif
+turkey_tourism,Turizm Gazetesi,https://www.turizmgazetesi.com,https://www.turizmgazetesi.com/rss,19,Tüm Dolu Haberler,RSS,Aktif
+turkey_tourism,Turizm Güncel,https://www.turizmguncel.com,https://www.turizmguncel.com/rss.xml,18,Tüm Dolu Haberler,RSS,Aktif
+turkey_tourism,Tourism Today,https://www.tourismtoday.net,https://www.tourismtoday.net/rss.xml,13,Tüm Dolu Haberler,RSS,Aktif
+turkey_tourism,Turizm Aktüel,https://www.turizmaktuel.com,https://www.turizmaktuel.com/rss,8,Tüm Dolu Haberler,RSS,Aktif
+turkey_economy,BloombergHT,https://www.bloomberght.com,https://www.bloomberght.com/rss,20,Maks 20 Limit,RSS / Google,Aktif
+turkey_economy,Ekonomim,https://www.ekonomim.com,https://www.ekonomim.com/export/rss,20,Maks 20 Limit,RSS,Aktif
+turkey_economy,Para Analiz,https://www.paraanaliz.com,https://paraanaliz.com/rss.xml,9,Tüm Dolu Haberler,RSS,Aktif
+germany_tourism,FVW Medien,https://www.fvw.de,https://www.fvw.de/news/feed/,16,Tüm Dolu Haberler,RSS,Aktif
+germany_tourism,Touristik Aktuell,https://www.touristik-aktuell.de,https://www.touristik-aktuell.de/feed/,11,Tüm Dolu Haberler,RSS,Aktif
+germany_economy,Handelsblatt,https://www.handelsblatt.com,https://www.handelsblatt.com/contentexport/feed/schlagzeilen,20,Maks 20 Limit,RSS,Aktif
+germany_economy,WirtschaftsWoche,https://www.wiwo.de,https://www.wiwo.de/contentexport/feed/rss/schlagzeilen,20,Maks 20 Limit,RSS,Aktif
+germany_economy,Börsen-Zeitung,https://www.boersen-zeitung.de,Google News Fallback,7,Tüm Dolu Haberler,Google Fallback,Aktif
+russia_tourism,TourDom,https://www.tourdom.ru,https://www.tourdom.ru/rss,30,Tüm Dolu Haberler,RSS,Aktif
+russia_tourism,RATA-News,https://ratanews.ru,https://ratanews.ru/rss.xml,5,Tüm Dolu Haberler,RSS,Aktif
+russia_tourism,TRN News,https://www.trn-news.ru,https://www.trn-news.ru/feed,4,Tüm Dolu Haberler,RSS,Aktif
+russia_economy,Kommersant,https://www.kommersant.ru,https://www.kommersant.ru/RSS/news.xml,15,Maks 15 Limit,RSS,Aktif
+russia_economy,Vedomosti,https://www.vedomosti.ru,https://vedomosti.ru/rss/articles,15,Maks 15 Limit,RSS,Aktif
+russia_economy,Interfax,https://www.interfax.ru,https://www.interfax.ru/rss,15,Maks 15 Limit,RSS,Aktif
