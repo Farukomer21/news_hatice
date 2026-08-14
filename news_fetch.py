@@ -293,8 +293,17 @@ class UniversalGoogleNewsScraper:
                 results = list(executor.map(fetch_single_article, filtered_items))
                 articles.extend(results)
 
-            print(f"✅ '{domain}' için {len(articles)} adet haber eksiksiz alındı.", flush=True)
-            return articles
+            # Yalnızca dolu olan haberleri tut
+            full_articles = [
+                a for a in articles 
+                if a.get("full_text") and len(a["full_text"].strip()) >= 150
+            ]
+
+            if max_articles:
+                full_articles = full_articles[:max_articles]
+
+            print(f"✅ '{domain}' için {len(full_articles)} adet %100 DOLU haber eksiksiz alındı.", flush=True)
+            return full_articles
 
         except Exception as e:
             print(f"❌ '{domain}' taranırken hata oluştu: {e}", flush=True)

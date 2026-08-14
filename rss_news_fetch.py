@@ -279,18 +279,18 @@ def fetch_domain_via_rss(
         if not looks_like_article_url(it["link"]):
             continue
         selected.append((it, pub_dt))
-        if max_articles and len(selected) >= max_articles:
+        # Yeterli dolu haber bulabilmek için aday havuzunu geniş tutuyoruz
+        if max_articles and len(selected) >= (max_articles * 3):
             break
 
     kw_note = f", anahtar kelime: {keywords}" if keywords else ""
-    print(f"   🎯 Filtreye uyan {len(selected)} haber indiriliyor{kw_note}...", flush=True)
+    print(f"   🎯 Filtreye uyan {len(selected)} aday haber taranıyor{kw_note}...", flush=True)
 
     def build(pair):
         it, pub_dt = pair
         text = fetch_article_text(it["link"], lang_hint=lang)
         source = "article"
         if not text and it["summary"] and len(it["summary"]) >= 80:
-            # Tam metin alınamadıysa (bot koruması vb.) RSS özetini işaretleyerek sakla
             text, source = it["summary"], "rss_summary"
         elif not text:
             source = ""
@@ -314,12 +314,20 @@ def fetch_domain_via_rss(
         with ThreadPoolExecutor(max_workers=max_workers) as ex:
             articles = list(ex.map(build, selected))
 
-    # Aynı gövdeyi birden fazla habere atama (news_fetch.py'deki hata) burada da olmasın
+    # Tekrar eden gövdeleri temizle
     articles = drop_duplicate_bodies(articles)
 
-    with_text = sum(1 for a in articles if a["full_text"])
-    print(f"✅ '{entry}': {len(articles)} haber, {with_text} tanesinde metin var.", flush=True)
-    return articles
+    # YALNIZCA TAM METNİ DOLU OLAN HABERLERİ AL
+    full_articles = [
+        a for a in articles 
+        if a.get("full_text") and len(a["full_text"].strip()) >= 150
+    ]
+
+    if max_articles:
+        full_articles = full_articles[:max_articles]
+
+    print(f"✅ '{entry}': {len(full_articles)} adet %100 DOLU haber alındı.", flush=True)
+    return full_articles
 
 
 def sanitize_articles(articles: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
